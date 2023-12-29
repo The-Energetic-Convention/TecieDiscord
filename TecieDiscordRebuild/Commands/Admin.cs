@@ -66,6 +66,16 @@ namespace TecieDiscordRebuild.Commands
             await RespondAsync(InteractionCallback.Message(new() { Content = $"{Context.Channel.Id}", Flags = MessageFlags.Ephemeral }));
         }
 
+        //echo
+        [SubSlashCommand("echo", "Echo a message in a given channel")]
+        public async Task Echo([SlashCommandParameter(Name = "message", Description = "The message to send", MaxLength = 300)] string message,
+                               [SlashCommandParameter(Name = "channel", Description = "The channel to send it in")] TextChannel channel)
+        {
+            await RespondAsync(InteractionCallback.Message(new() { Content = "Sending message...", Flags = MessageFlags.Ephemeral }));
+            await channel.SendMessageAsync(message);
+            await ModifyResponseAsync((properties) => { properties.Content = "Message sent"; });
+        }
+
         //announceAll
         [SubSlashCommand("announce-all", "Send an @everyone announcement to all announcement channels")]
         public async Task AnnounceAll([SlashCommandParameter(Name = "message", Description = "The announcement message to send", MaxLength = 300)] string message,
