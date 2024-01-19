@@ -5,6 +5,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="GoogleSearchAPI">
-      <HintPath>..\..\..\GoogleSearchAPI_0.4_alpha\bin\DotNet\GoogleSearchAPI.dll</HintPath>
+    <Reference Include="GoogleSearchAPI.Net20">
+      <HintPath>..\..\Built\GoogleSearchAPI.Net20.dll</HintPath>
     </Reference>
-    <Reference Include="TECDataClasses">
-      <HintPath>..\..\TECDataClasses\TECDataClasses\bin\Release\net6.0\TECDataClasses.dll</HintPath>
+    <Reference Include="TECDataClasses_Framework">
+      <HintPath>..\..\Built\TECDataClasses_Framework.dll</HintPath>
     </Reference>
     <Reference Include="TECEncryption">
       <HintPath>..\..\TECEncryption\TECEncryption\bin\Debug\TECEncryption.dll</HintPath>
