@@ -129,6 +129,31 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
+            // Send announcement to telegram
+            ss = Program.ConnectTelegramClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Telegram success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Telegram failure");
+                    break;
+                default:
+                    Console.WriteLine("Telegram issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
             await ModifyResponseAsync((properties) => { properties.Content = "Announcements sent"; });
         }
 

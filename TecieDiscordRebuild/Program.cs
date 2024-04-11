@@ -117,12 +117,28 @@ namespace TecieDiscordRebuild
             }
             catch (Exception e) { Console.WriteLine(e.Message); return null; }
         }
-        
+
         public static StreamString ConnectBlueskyClient()
         {
             try
             {
                 pipeClient = new NamedPipeClientStream(".", "TecieBlueskyPipe", PipeDirection.InOut, PipeOptions.None);
+                pipeClient.Connect();
+                var ss = new StreamString(pipeClient);
+                Console.WriteLine("Authorizing");
+                ss.WriteString(authKey);
+                if (ss.ReadString() != authKey) { ss.WriteString("Unauthorized server!"); throw new Exception("Unauthorized server connection attemted!"); }
+
+                return ss;
+            }
+            catch (Exception e) { Console.WriteLine(e.Message); return null; }
+        }
+
+        public static StreamString ConnectTelegramClient()
+        {
+            try
+            {
+                pipeClient = new NamedPipeClientStream(".", "TecieTelegramPipe", PipeDirection.InOut, PipeOptions.None);
                 pipeClient.Connect();
                 var ss = new StreamString(pipeClient);
                 Console.WriteLine("Authorizing");

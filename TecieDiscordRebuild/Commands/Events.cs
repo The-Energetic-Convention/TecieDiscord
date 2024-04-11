@@ -465,6 +465,34 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
+            // Send announcement to Telegram
+            ss = Program.ConnectTelegramClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString("E");
+            Program.CheckResponse(ss);
+
+            EventPingInfo eventinfo = new EventPingInfo(@event.EventName, @event.EventDescription, @event.EventLink);
+            Console.WriteLine(JsonConvert.SerializeObject(eventinfo, Formatting.Indented));
+            string stringinfo = JsonConvert.SerializeObject(eventinfo);
+            ss.WriteString(stringinfo);
+
+            string status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Telegram success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Telegram failure");
+                    break;
+                default:
+                    Console.WriteLine("Telegram issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
             await ModifyResponseAsync((props) => { props.Content = "Pinged for event"; });
         }
 
