@@ -433,7 +433,20 @@ namespace TecieDiscordRebuild.Commands
             {
                 if (BotSettings.settings.announceChannels.Contains(JsonConvert.SerializeObject(channel.Key)))
                 {
-                    await ((TextChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
+                    
+                    switch (channel.Value.GetType().Name)
+                    {
+                        case nameof(TextGuildChannel):
+                            await ((TextGuildChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
+                            break;
+                        case nameof(TextChannel):
+                            await ((TextChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
+                            break;
+                        case nameof(AnnouncementGuildChannel):
+                            await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
+                            //publish message if possible
+                            break;
+                    }
                 }
             }
 
@@ -472,12 +485,9 @@ namespace TecieDiscordRebuild.Commands
             ss.WriteString("E");
             Program.CheckResponse(ss);
 
-            EventPingInfo eventinfo = new EventPingInfo(@event.EventName, @event.EventDescription, @event.EventLink);
-            Console.WriteLine(JsonConvert.SerializeObject(eventinfo, Formatting.Indented));
-            string stringinfo = JsonConvert.SerializeObject(eventinfo);
             ss.WriteString(stringinfo);
 
-            string status = ss.ReadString();
+            status = ss.ReadString();
             switch (status)
             {
                 case "SUCCESS":

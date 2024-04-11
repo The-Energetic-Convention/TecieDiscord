@@ -98,6 +98,7 @@ namespace TecieDiscordRebuild.Commands
                                 break;
                             case nameof(AnnouncementGuildChannel):
                                 await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync($"@everyone! {message}");
+                                //publish message if possible
                                 break;
                         }
                     }
