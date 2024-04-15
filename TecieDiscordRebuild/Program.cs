@@ -30,6 +30,7 @@ namespace TecieDiscordRebuild
         public static Task Main(string[] args) => new Program().MainAsync();
         public async Task MainAsync()
         {
+            Console.WriteLine("\n*** Tecie Discord ***\n");
             client.Log += Log;
             client.Ready += ClientReady;
             client.GuildUserAdd += UserJoined;
@@ -139,6 +140,22 @@ namespace TecieDiscordRebuild
             try
             {
                 pipeClient = new NamedPipeClientStream(".", "TecieTelegramPipe", PipeDirection.InOut, PipeOptions.None);
+                pipeClient.Connect();
+                var ss = new StreamString(pipeClient);
+                Console.WriteLine("Authorizing");
+                ss.WriteString(authKey);
+                if (ss.ReadString() != authKey) { ss.WriteString("Unauthorized server!"); throw new Exception("Unauthorized server connection attemted!"); }
+
+                return ss;
+            }
+            catch (Exception e) { Console.WriteLine(e.Message); return null; }
+        }
+
+        public static StreamString ConnectTwitterClient()
+        {
+            try
+            {
+                pipeClient = new NamedPipeClientStream(".", "TecieTwitterPipe", PipeDirection.InOut, PipeOptions.None);
                 pipeClient.Connect();
                 var ss = new StreamString(pipeClient);
                 Console.WriteLine("Authorizing");

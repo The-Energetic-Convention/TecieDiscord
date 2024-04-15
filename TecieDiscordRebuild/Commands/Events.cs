@@ -443,8 +443,8 @@ namespace TecieDiscordRebuild.Commands
                             await ((TextChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
                             break;
                         case nameof(AnnouncementGuildChannel):
-                            await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
-                            //publish message if possible
+                            RestMessage sentmessage = await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync(new MessageProperties() { Content = $"<@&{pingRole.Id}>", Embeds = [embed] });
+                            await sentmessage.CrosspostAsync();
                             break;
                     }
                 }
@@ -498,6 +498,31 @@ namespace TecieDiscordRebuild.Commands
                     break;
                 default:
                     Console.WriteLine("Telegram issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            // Send announcement to Twitter
+            ss = Program.ConnectTwitterClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString("E");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(stringinfo);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Twitter success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Twitter failure");
+                    break;
+                default:
+                    Console.WriteLine("Twitter issue?");
                     break;
             }
 

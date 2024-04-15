@@ -97,8 +97,8 @@ namespace TecieDiscordRebuild.Commands
                                 await ((TextChannel)channel.Value).SendMessageAsync($"@everyone! {message}");
                                 break;
                             case nameof(AnnouncementGuildChannel):
-                                await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync($"@everyone! {message}");
-                                //publish message if possible
+                                RestMessage sentmessage = await ((AnnouncementGuildChannel)channel.Value).SendMessageAsync($"@everyone! {message}");
+                                await sentmessage.CrosspostAsync();
                                 break;
                         }
                     }
@@ -150,6 +150,31 @@ namespace TecieDiscordRebuild.Commands
                     break;
                 default:
                     Console.WriteLine("Telegram issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            // Send announcement to twitter
+            ss = Program.ConnectTwitterClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Twitter success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Twitter failure");
+                    break;
+                default:
+                    Console.WriteLine("Twitter issue?");
                     break;
             }
 
