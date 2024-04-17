@@ -77,14 +77,14 @@ namespace TecieDiscordRebuild.Commands
         }
 
         //announceAll
-        [SubSlashCommand("twitter-test", "Send a test message to the twitter bot")]
+        [SubSlashCommand("vrc-test", "Send a test message to the vrc bot")]
         public async Task TwitterTest([SlashCommandParameter(Name = "message", Description = "The test message to send", MaxLength = 300)] string message,
                                       [SlashCommandParameter(Name = "announcement", Description = "Whether it is an announcement (T) or update (F)")] bool announce = true)
         {
             await RespondAsync(InteractionCallback.Message(new() { Content = "Sending test...", Flags = MessageFlags.Ephemeral }));
             
             // Send announcement to twitter
-            var ss = Program.ConnectTwitterClient();
+            var ss = Program.ConnectVRCClient();
 
             // tell the server we are sending an announcement
             ss.WriteString(announce ? "A" : "U");
@@ -96,13 +96,13 @@ namespace TecieDiscordRebuild.Commands
             switch (status)
             {
                 case "SUCCESS":
-                    Console.WriteLine("Twitter success");
+                    Console.WriteLine("VRC success");
                     break;
                 case "FAILURE":
-                    Console.WriteLine("Twitter failure");
+                    Console.WriteLine("VRC failure");
                     break;
                 default:
-                    Console.WriteLine("Twitter issue?");
+                    Console.WriteLine("VRC issue?");
                     break;
             }
 
@@ -210,6 +210,31 @@ namespace TecieDiscordRebuild.Commands
                     break;
                 default:
                     Console.WriteLine("Twitter issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            // Send announcement to vrchat
+            ss = Program.ConnectVRCClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("VRC success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("VRC failure");
+                    break;
+                default:
+                    Console.WriteLine("VRC issue?");
                     break;
             }
 

@@ -528,6 +528,31 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
+            // Send announcement to VRChat
+            ss = Program.ConnectVRCClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString("E");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(stringinfo);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("VRC success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("VRC failure");
+                    break;
+                default:
+                    Console.WriteLine("VRC issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
             await ModifyResponseAsync((props) => { props.Content = "Pinged for event"; });
         }
 
