@@ -77,6 +77,41 @@ namespace TecieDiscordRebuild.Commands
         }
 
         //announceAll
+        [SubSlashCommand("twitter-test", "Send a test message to the twitter bot")]
+        public async Task TwitterTest([SlashCommandParameter(Name = "message", Description = "The test message to send", MaxLength = 300)] string message,
+                                      [SlashCommandParameter(Name = "announcement", Description = "Whether it is an announcement (T) or update (F)")] bool announce = true)
+        {
+            await RespondAsync(InteractionCallback.Message(new() { Content = "Sending test...", Flags = MessageFlags.Ephemeral }));
+            
+            // Send announcement to twitter
+            var ss = Program.ConnectTwitterClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            string status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Twitter success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Twitter failure");
+                    break;
+                default:
+                    Console.WriteLine("Twitter issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            await ModifyResponseAsync((properties) => { properties.Content = "test sent"; });
+        }
+
+        //announceAll
         [SubSlashCommand("announce-all", "Send an @everyone announcement to all announcement channels")]
         public async Task AnnounceAll([SlashCommandParameter(Name = "message", Description = "The announcement message to send", MaxLength = 300)] string message,
                                       [SlashCommandParameter(Name = "announcement", Description = "Whether it is an announcement (T) or update (F)")] bool announce = true)
