@@ -503,6 +503,31 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
+            // Send announcement to VRChat
+            ss = Program.ConnectVRCClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString("E");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(stringinfo);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("VRC success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("VRC failure");
+                    break;
+                default:
+                    Console.WriteLine("VRC issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
             // Send announcement to Twitter
             ss = Program.ConnectTwitterClient();
 
@@ -528,8 +553,8 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
-            // Send announcement to VRChat
-            ss = Program.ConnectVRCClient();
+            // Send announcement to Facebook
+            ss = Program.ConnectFacebookClient();
 
             // tell the server we are sending an announcement
             ss.WriteString("E");
@@ -541,13 +566,13 @@ namespace TecieDiscordRebuild.Commands
             switch (status)
             {
                 case "SUCCESS":
-                    Console.WriteLine("VRC success");
+                    Console.WriteLine("Facebook success");
                     break;
                 case "FAILURE":
-                    Console.WriteLine("VRC failure");
+                    Console.WriteLine("Facebook failure");
                     break;
                 default:
-                    Console.WriteLine("VRC issue?");
+                    Console.WriteLine("Facebook issue?");
                     break;
             }
 

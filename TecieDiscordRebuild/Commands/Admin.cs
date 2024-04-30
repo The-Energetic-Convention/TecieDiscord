@@ -77,14 +77,14 @@ namespace TecieDiscordRebuild.Commands
         }
 
         //announceAll
-        [SubSlashCommand("vrc-test", "Send a test message to the vrc bot")]
+        [SubSlashCommand("facebook-test", "Send a test message to the vrc bot")]
         public async Task TwitterTest([SlashCommandParameter(Name = "message", Description = "The test message to send", MaxLength = 300)] string message,
                                       [SlashCommandParameter(Name = "announcement", Description = "Whether it is an announcement (T) or update (F)")] bool announce = true)
         {
             await RespondAsync(InteractionCallback.Message(new() { Content = "Sending test...", Flags = MessageFlags.Ephemeral }));
             
             // Send announcement to twitter
-            var ss = Program.ConnectVRCClient();
+            var ss = Program.ConnectFacebookClient();
 
             // tell the server we are sending an announcement
             ss.WriteString(announce ? "A" : "U");
@@ -96,13 +96,13 @@ namespace TecieDiscordRebuild.Commands
             switch (status)
             {
                 case "SUCCESS":
-                    Console.WriteLine("VRC success");
+                    Console.WriteLine("Facebook success");
                     break;
                 case "FAILURE":
-                    Console.WriteLine("VRC failure");
+                    Console.WriteLine("Facebook failure");
                     break;
                 default:
-                    Console.WriteLine("VRC issue?");
+                    Console.WriteLine("Facebook issue?");
                     break;
             }
 
@@ -190,31 +190,6 @@ namespace TecieDiscordRebuild.Commands
 
             Program.pipeClient.Close();
 
-            // Send announcement to twitter
-            ss = Program.ConnectTwitterClient();
-
-            // tell the server we are sending an announcement
-            ss.WriteString(announce ? "A" : "U");
-            Program.CheckResponse(ss);
-
-            ss.WriteString(message);
-
-            status = ss.ReadString();
-            switch (status)
-            {
-                case "SUCCESS":
-                    Console.WriteLine("Twitter success");
-                    break;
-                case "FAILURE":
-                    Console.WriteLine("Twitter failure");
-                    break;
-                default:
-                    Console.WriteLine("Twitter issue?");
-                    break;
-            }
-
-            Program.pipeClient.Close();
-
             // Send announcement to vrchat
             ss = Program.ConnectVRCClient();
 
@@ -235,6 +210,56 @@ namespace TecieDiscordRebuild.Commands
                     break;
                 default:
                     Console.WriteLine("VRC issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            // Send announcement to facebook
+            ss = Program.ConnectFacebookClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Facebook success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Facebook failure");
+                    break;
+                default:
+                    Console.WriteLine("Facebook issue?");
+                    break;
+            }
+
+            Program.pipeClient.Close();
+
+            // Send announcement to twitter
+            ss = Program.ConnectTwitterClient();
+
+            // tell the server we are sending an announcement
+            ss.WriteString(announce ? "A" : "U");
+            Program.CheckResponse(ss);
+
+            ss.WriteString(message);
+
+            status = ss.ReadString();
+            switch (status)
+            {
+                case "SUCCESS":
+                    Console.WriteLine("Twitter success");
+                    break;
+                case "FAILURE":
+                    Console.WriteLine("Twitter failure");
+                    break;
+                default:
+                    Console.WriteLine("Twitter issue?");
                     break;
             }
 

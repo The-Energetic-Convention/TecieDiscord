@@ -183,6 +183,22 @@ namespace TecieDiscordRebuild
             catch (Exception e) { Console.WriteLine(e.Message); return null; }
         }
 
+        public static StreamString ConnectFacebookClient()
+        {
+            try
+            {
+                pipeClient = new NamedPipeClientStream(".", "TecieFacebookPipe", PipeDirection.InOut, PipeOptions.None);
+                pipeClient.Connect();
+                var ss = new StreamString(pipeClient);
+                Console.WriteLine("Authorizing");
+                ss.WriteString(authKey);
+                if (ss.ReadString() != authKey) { ss.WriteString("Unauthorized server!"); throw new Exception("Unauthorized server connection attemted!"); }
+
+                return ss;
+            }
+            catch (Exception e) { Console.WriteLine(e.Message); return null; }
+        }
+
         public static void CheckResponse(StreamString ss)
         {
             if (ss.ReadString() != "READY") { throw new Exception("Server Error"); }
